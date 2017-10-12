@@ -1,9 +1,6 @@
 import com.company.logMessage;
-import org.junit.*;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -15,12 +12,12 @@ public class tests {
     @Test
     public void testMessageParsing(){
         //create a logMessage given a sinle message string, check values are extracted correctly
-        logMessage lm = new logMessage("[INFO] [20170901 13:57:29] [index.go:125] Starting search]");
+        logMessage lm = new logMessage("[INFO] [20170901 13:57:29] [index.go:125] Starting search");
         assertTrue(lm.level.equalsIgnoreCase("info"));
         assertTrue(lm.timeStamp.equalsIgnoreCase("2017-09-01 13:57:29"));
         assertTrue(lm.file.equalsIgnoreCase("index.go"));
-        assertTrue(lm.line.equalsIgnoreCase("125"));
-        assertTrue(lm.message.equalsIgnoreCase("staring search"));
+        assertTrue(lm.fileLine.equalsIgnoreCase("125"));
+        assertTrue(lm.message.equalsIgnoreCase("starting search "));
     }
 
     @Test
