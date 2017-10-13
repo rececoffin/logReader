@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static jdk.nashorn.internal.objects.NativeString.toUpperCase;
 
@@ -67,9 +69,14 @@ public class logReader {
 
     private void readLogFile() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(fileName));
+/*        Set<String> uniqueLines = new HashSet<>();
+        uniqueLines.addAll(lines); cant use set if I want to preserve the order*/
         //print all lines in the file
-        for(String fullMessage : lines){
-            logMessage lm = new logMessage(fullMessage);
+        String lastLine = "";
+        for(String message: lines){
+            if(message.equals(lastLine)) continue;
+            logMessage lm = new logMessage(message);
+            lastLine = message;
         }
     }
 
