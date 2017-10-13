@@ -1,17 +1,24 @@
 package com.company;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by ReceCoffin on 10/12/2017.
  * Store the information from a single log message into a JSON format
  */
 public class logMessage {
+    //all the attributes from a single message
     private String wholeMessage;
     public String level;
     public String timeStamp;
     public String file;
     public String fileLine;
     public String message;
+    //store all possible levels, used for -c flag
+    private boolean filterLevel;
     public logMessage(String wholeMesage){
         this.wholeMessage = wholeMesage;
         //parse the entire string into parts
@@ -19,17 +26,24 @@ public class logMessage {
     }
 
     private void parseMessage(String wholeMesage) {
-        //split at the spaces, get rid of brackets
-        String line[] = wholeMesage.split(" ");
-        //first entry is the level
-        level = line[0].substring(1,line[0].length() - 1);
-        //remove time and date, put in correct format
-        parseTimeDate(line[1], line[2]);
-        parseFileAndLine(line[3]);
-        //finally get the message
-        message = "";
-        for(int i = 4; i < line.length; i++){
-            message += line[i] + " ";
+        try {
+            //split at the spaces, get rid of brackets
+            String line[] = wholeMesage.split(" ");
+            //first entry is the level
+            level = line[0].substring(1,line[0].length() - 1);
+            //remove time and date, put in correct format
+            parseTimeDate(line[1], line[2]);
+            parseFileAndLine(line[3]);
+            //finally get the message
+            message = "";
+            for(int i = 4; i < line.length; i++){
+                message += line[i] + " ";
+            }
+            //print the message
+            printMessage();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Invalid data in log file.");
+            System.exit(2);
         }
     }
 
@@ -41,24 +55,34 @@ public class logMessage {
         fileLine = line[1];
     }
 
-    //TODO: Correctly Parse the time and date
     private void parseTimeDate(String date, String time) {
-/*        date = date.substring(1, date.length());
+        date = date.substring(1, date.length());
         time = date + " " + time.substring(0, time.length() - 1);
-        System.out.println(time);
+/*        System.out.println(time);*/
         SimpleDateFormat template = new SimpleDateFormat("yyyyMMdd HHmmss");
         try {
-            Date date1 = template.parse("time");
-            SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
-            System.out.println(dt.format(date1));
+            Date date1 = template.parse(time);
+            SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            timeStamp = dt.format(date1);
+/*            System.out.println(dt.format(date1));*/
         } catch (ParseException e) {
-            e.printStackTrace();
-        }*/
+            System.out.println("ERROR: " + e.getMessage());
+        }
+    }
+
+    //print the message in a single line, JSON formatted
+    public void printMessage(){
+        if(message.isEmpty()) {
+            System.out.println("Invalid message type");
+            System.exit(2);
+        }
+        System.out.println("{\"level\":\"" + level + "\", \"timestamp\":\"" + timeStamp + "\", \"file\":\""
+                            + file + "\", \"line\":\"" + fileLine + "\", \"message\":\"" + message + "\"}");
     }
 
     //compare log messages in order to delete duplicates
     public boolean equals(logMessage other) {
-        //all attributes
+        //easiest to compare the whole string at once
         if(this.wholeMessage.equalsIgnoreCase(other.wholeMessage)) return true;
         return false;
     }

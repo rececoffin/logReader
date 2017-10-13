@@ -1,0 +1,5 @@
+[INFO] [20170901 135729] [test.go:1] line 1
+[INFO] [20170901 135729] [test.go:6] line 2
+[INFO] [20170901 135729] [ersd.go:125] line 3
+[INFO] [20170901 135729] [index.go:125] line 5
+[INFO] [20170901 135729] [index.go:125] line 5
