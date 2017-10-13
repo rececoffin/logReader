@@ -1,6 +1,5 @@
 import com.company.logMessage;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -16,7 +15,7 @@ public class tests {
         assertTrue(lm.level.equalsIgnoreCase("info"));
         assertTrue(lm.timeStamp.equalsIgnoreCase("2017-09-01 13:57:29"));
         assertTrue(lm.file.equalsIgnoreCase("index.go"));
-        assertTrue(lm.fileLine.equalsIgnoreCase("125"));
+        assertTrue(lm.fileLine == 125);
         assertTrue(lm.message.equalsIgnoreCase("starting search "));
     }
 

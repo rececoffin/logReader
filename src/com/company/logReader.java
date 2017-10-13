@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static jdk.nashorn.internal.objects.NativeString.toUpperCase;
 
@@ -20,7 +18,30 @@ Read data from a log file, print in a JSON format
 public class logReader {
     private String fileName;
     private String levelFilter;
+    private int levelFilterIndex;
+    //all possible levels
+    public static final List<String> LEVELS = Collections.unmodifiableList(Arrays.asList(
+                                            "ERROR", "WARN", "INFO", "DEBUG", "TRACE"));
     public logReader(String[] args) {
+        checkValidArgs(args);
+        //user input invalid min level
+        if(!LEVELS.contains(levelFilter)){
+            System.out.println("Invalid level \"" + levelFilter + "\"");
+            System.exit(3);
+        }
+        levelFilterIndex = LEVELS.indexOf(levelFilter);
+        //read in the file
+/*        System.out.println(fileName);
+        System.out.println(levelFilter);*/
+        try {
+            readLogFile();
+        } catch (IOException e) {
+            System.out.println(fileName + " not found.");
+            System.exit(1);
+        }
+    }
+
+    private void checkValidArgs(String[] args){
         //check for flags
         //-f [filename] is required -c [level] is optional
         //assuming the user enters flags in that order
@@ -56,19 +77,16 @@ public class logReader {
             System.out.println("Invalid arguments.");
             System.exit(1);
         }
-        //read in the file
-/*        System.out.println(fileName);
-        System.out.println(levelFilter);*/
-        try {
-            readLogFile();
-        } catch (IOException e) {
-            System.out.println(fileName + " not found.");
-            System.exit(1);
-        }
     }
 
+    //read in the log file
     private void readLogFile() throws IOException {
         List<String> lines = Files.readAllLines(Paths.get(fileName));
+        printLogs(lines);
+    }
+
+    //parse and print the log info
+    private void printLogs(List<String> lines){
 /*        Set<String> uniqueLines = new HashSet<>();
         uniqueLines.addAll(lines); cant use set if I want to preserve the order*/
         //print all lines in the file
@@ -76,9 +94,13 @@ public class logReader {
         for(String message: lines){
             if(message.equals(lastLine)) continue;
             logMessage lm = new logMessage(message);
+            //only print if above specified level
+            if(LEVELS.indexOf(lm.level) <=  levelFilterIndex) lm.printMessage();
             lastLine = message;
         }
     }
+
+
 
 
     public static void main(String[] args) {

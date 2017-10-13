@@ -15,10 +15,8 @@ public class logMessage {
     public String level;
     public String timeStamp;
     public String file;
-    public String fileLine;
+    public int fileLine;
     public String message;
-    //store all possible levels, used for -c flag
-    private boolean filterLevel;
     public logMessage(String wholeMesage){
         this.wholeMessage = wholeMesage;
         //parse the entire string into parts
@@ -39,32 +37,36 @@ public class logMessage {
             for(int i = 4; i < line.length; i++){
                 message += line[i] + " ";
             }
-            //print the message
-            printMessage();
+/*            //print the message
+            printMessage();*/
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Invalid data in log file.");
             System.exit(2);
         }
     }
 
+    //Parse out the file name and line, check the line number is valid
     private void parseFileAndLine(String s) {
         s = s.substring(1, s.length() - 1);
         //split and store
         String line[] = s.split(":");
         file = line[0];
-        fileLine = line[1];
+        fileLine = Integer.parseInt(line[1]);
+        if(fileLine <= 0){
+            System.out.println("Invalid file line.");
+            System.exit(2);
+        }
     }
 
+    //Parse the time and date fields into something more readable
     private void parseTimeDate(String date, String time) {
         date = date.substring(1, date.length());
         time = date + " " + time.substring(0, time.length() - 1);
-/*        System.out.println(time);*/
         SimpleDateFormat template = new SimpleDateFormat("yyyyMMdd HHmmss");
         try {
             Date date1 = template.parse(time);
             SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             timeStamp = dt.format(date1);
-/*            System.out.println(dt.format(date1));*/
         } catch (ParseException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
