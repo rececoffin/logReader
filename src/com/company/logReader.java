@@ -1,5 +1,8 @@
 package com.company;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -77,20 +80,16 @@ public class logReader {
 
     //read in the log file
     private void readLogFile() throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(fileName));
-        printLogs(lines);
-    }
-
-    //parse and print the log info
-    private void printLogs(List<String> lines){
-/*        Set<String> uniqueLines = new HashSet<>();
-        uniqueLines.addAll(lines); cant use set if I want to preserve the order*/
-        //print all lines in the file
-        String lastLine = "";
-        for(String message: lines){
+        //print each line of the file
+        FileReader reader = new FileReader(fileName);
+        BufferedReader br = new BufferedReader(reader);
+        //loop and read
+        String message;
+        String lastLine = "null";
+        while((message = br.readLine()) != null){
             if(message.equals(lastLine)) continue;
             logMessage lm = new logMessage(message);
-            //only print if above specified level
+            //only print if above a specific level
             if(LEVELS.indexOf(lm.level) <=  levelFilterIndex) lm.printMessage();
             lastLine = message;
         }
